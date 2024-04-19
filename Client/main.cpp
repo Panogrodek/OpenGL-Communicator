@@ -1,11 +1,14 @@
 #include "pch.h"
 #include <iostream>
 #include "Test.hpp"
-#include "GL/glew.h"
-#include "GLFW/glfw3.h"
+
+#include <GLM/glm.hpp>
+
 
 int main() {
     Test::test();
+
+    glm::vec2(1.f, 0.f);
 
     // start GL context and O/S window using the GLFW helper library
     if (!glfwInit()) {
