@@ -7,6 +7,9 @@ project "Client"
 	targetdir "bin/%{cfg.buildcfg}"
 	objdir "bin/obj/%{cfg.buildcfg}"
 	
+	pchheader "pch.h"
+    pchsource "pch/pch.cpp"
+	
 	files{
 		"**.cpp",
 		"**.hpp",
@@ -16,6 +19,7 @@ project "Client"
 	includedirs{
 		"include",
 		"../Polonium/include",
+		"pch",
 	}
 	
 	links {

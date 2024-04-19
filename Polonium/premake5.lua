@@ -7,6 +7,9 @@ project "Polonium"
 	targetdir "bin/%{cfg.buildcfg}"
     objdir    "bin/obj/%{cfg.buildcfg}"
 	
+	pchheader "plpch.h"
+    pchsource "pch/plpch.cpp"
+	
 	files{
 		"**.cpp",
 		"**.hpp",
@@ -15,6 +18,7 @@ project "Polonium"
 	
 	includedirs{
 		"include",
+		"pch",
 	}
 	
 	filter "configurations:debug"
