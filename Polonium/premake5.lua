@@ -18,8 +18,25 @@ project "Polonium"
 	
 	includedirs{
 		"include",
+		"../include",
 		"pch",
 	}
+	
+	libdirs {
+        "../libs/GLEW",
+        "../libs/GLFW",
+    }
+	
+	links {
+        "glfw3_mt",
+        "glew32s",
+        "opengl32",
+        "Winmm",
+    }
+	
+	defines {
+        "GLEW_STATIC",
+    }
 	
 	filter "configurations:debug"
         defines {

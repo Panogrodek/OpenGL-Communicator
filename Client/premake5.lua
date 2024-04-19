@@ -18,6 +18,7 @@ project "Client"
 	
 	includedirs{
 		"include",
+		"../include",
 		"../Polonium/include",
 		"pch",
 	}
@@ -25,6 +26,10 @@ project "Client"
 	links {
 		"Polonium"
 	}
+	
+	defines {
+        "GLEW_STATIC",
+    }
 	
 	filter "configurations:debug"
         defines {
