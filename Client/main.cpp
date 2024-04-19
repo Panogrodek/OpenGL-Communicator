@@ -1,53 +1,83 @@
 #include "pch.h"
 #include <iostream>
 #include "Test.hpp"
+#include <iostream>
 
-#include <GLM/glm.hpp>
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
+#include <IMGUI/imgui.h>
+#include <IMGUI/imgui_impl_glfw.h>
+#include <IMGUI/imgui_impl_opengl3.h>
 
+static void helloWorld() {
+	ImGui::Begin("My DearImGui Window");
+	ImGui::Text("hello, world");
+	ImGui::End();
+}
 
 int main() {
-    Test::test();
 
-    glm::vec2(1.f, 0.f);
+	// Setup window
+	glfwSetErrorCallback([](int error, const char* description) {
+		fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+		});
+	glfwInit();
 
-    // start GL context and O/S window using the GLFW helper library
-    if (!glfwInit()) {
-        fprintf(stderr, "ERROR: could not start GLFW3\n");
-        return 1;
-    }
+	// GL 3.0 + GLSL 130
+	const char* glsl_version = "#version 130";
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    // uncomment these lines if on Apple OS X
-    /*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
+	// Create window with graphics context
+	GLFWwindow* window = glfwCreateWindow(800, 600, "My GLFW Window", nullptr, nullptr);
+	glfwMakeContextCurrent(window);
+	glfwSwapInterval(1); // Enable vsync
 
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Hello Triangle", NULL, NULL);
-    if (!window) {
-        fprintf(stderr, "ERROR: could not open window with GLFW3\n");
-        glfwTerminate();
-        return 1;
-    }
-    glfwMakeContextCurrent(window);
+	// Initialize OpenGL loader
+	glewInit();
 
-    // start GLEW extension handler
-    glewExperimental = GL_TRUE;
-    glewInit();
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
 
-    // get version info
-    const GLubyte* renderer = glGetString(GL_RENDERER); // get renderer string
-    const GLubyte* version = glGetString(GL_VERSION); // version as a string
-    printf("Renderer: %s\n", renderer);
-    printf("OpenGL version supported %s\n", version);
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
 
-    // tell GL to only draw onto a pixel if the shape is closer to the viewer
-    glEnable(GL_DEPTH_TEST); // enable depth-testing
-    glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
+	// Setup Platform/Renderer bindings
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
 
-    /* OTHER STUFF GOES HERE NEXT */
+	// Main loop
+	int display_w, display_h;
+	glfwGetFramebufferSize(window, &display_w, &display_h);
 
-    // close GL context and any other GLFW resources
-    glfwTerminate();
-    system("pause");
-    return 0;
+	while (!glfwWindowShouldClose(window)) {
+		// Poll and handle events (inputs, window resize, etc.)
+		glfwPollEvents();
+
+		// Start the Dear ImGui frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		// Run our Dear ImGui application
+		helloWorld();
+
+		// Rendering
+		ImGui::Render();
+		glfwGetFramebufferSize(window, &display_w, &display_h);
+		glViewport(0, 0, display_w, display_h);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		glfwSwapBuffers(window);
+	}
+
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	glfwDestroyWindow(window);
+	glfwTerminate();
 }
