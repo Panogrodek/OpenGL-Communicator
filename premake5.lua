@@ -15,3 +15,4 @@ workspace "Communicator"
 	
 include "Client"
 include "Polonium"
+include "Server"
