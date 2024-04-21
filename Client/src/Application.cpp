@@ -7,6 +7,7 @@
 
 #include "States/StateMachine.hpp"
 #include "States/Menu.hpp"
+#include "Client.hpp"
 
 Application::Application()
 {
@@ -16,6 +17,7 @@ Application::Application()
 
 Application::~Application()
 {
+    client.Destroy();
     pl::renderer.Destroy();
 }
 
@@ -39,6 +41,7 @@ void Application::Run()
 
 void Application::Update()
 {
+    client.Run();
     stateMachine.Update();
 }
 

@@ -1,6 +1,8 @@
 #include <iostream>
+#include "Server.hpp"
 
 int main() {
-	system("pause");
+	Server server;
+	server.Run();
 	return 0;
 }
