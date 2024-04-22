@@ -32,9 +32,16 @@ void RectangleShape::InitVertices()
 	p_vertexCount = 4;
 
 	p_baseVertices[0].position = { -0.5f,-0.5f };
+	p_baseVertices[0].texCoords = { 0.0f, 0.0f };
+
 	p_baseVertices[1].position = { -0.5f,+0.5f };
+	p_baseVertices[1].texCoords = { 0.0f, 1.0f };
+	
 	p_baseVertices[2].position = { +0.5f,+0.5f };
+	p_baseVertices[2].texCoords = { 1.0f, 1.0f };
+	
 	p_baseVertices[3].position = { +0.5f,-0.5f };
+	p_baseVertices[3].texCoords = { 1.0f, 0.0f };
 
 	for (int i = 0; i < p_vertexCount; i++) {
 		p_transformedVertices[i] = p_baseVertices[i].position;

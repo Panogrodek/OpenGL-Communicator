@@ -41,7 +41,7 @@ void Application::Run()
 
 void Application::Update()
 {
-    client.Run();
+    //client.Run();
     stateMachine.Update();
 }
 

@@ -9,6 +9,7 @@ namespace priv {
 	struct QuadVertexAttrib {
 		glm::vec3 Position{};
 		glm::vec4 Color{};
+		glm::vec2 TexCoords{};
 	};
 
 	class BatchRenderer {
@@ -18,6 +19,7 @@ namespace priv {
 
 		void Draw(pl::Drawable* object);
 	private:
+		void SceneBegin();
 		void Flush();
 		friend class priv::Renderer;
 		uint32_t m_maxVertices = 0;

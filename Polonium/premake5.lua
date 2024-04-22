@@ -19,12 +19,14 @@ project "Polonium"
 	includedirs{
 		"include",
 		"../include",
+		"../include/FREETYPE",
 		"pch",
 	}
 	
 	libdirs {
         "../libs/GLEW",
         "../libs/GLFW",
+		"../libs/FREETYPE",
     }
 	
 	links {
@@ -32,6 +34,7 @@ project "Polonium"
         "glew32s",
         "opengl32",
         "Winmm",
+		"freetype",
     }
 	
 	defines {

@@ -19,6 +19,7 @@ project "Client"
 	includedirs{
 		"include",
 		"../include",
+		"../include/FREETYPE",
 		"../Polonium/include",
 		"pch",
 	}

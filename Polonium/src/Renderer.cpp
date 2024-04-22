@@ -10,6 +10,9 @@
 #include <GLM/gtx/euler_angles.hpp>
 
 #include "Graphics/BatchRenderer.hpp"
+#include "Graphics/Font.hpp"
+
+
 
 using namespace pl;
 using namespace priv;
@@ -59,10 +62,12 @@ void Renderer::InitGL()
 
     //this should not be here
     batchRenderer.Init(10000);
+    fontManager.InitFreeType();
 }
 
 void Renderer::Destroy()
 {
+    fontManager.CloseFreeType();
     batchRenderer.Destroy();
     glfwTerminate();
 
@@ -91,6 +96,8 @@ void Renderer::BeginDraw()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    batchRenderer.SceneBegin();
 }
 
 void Renderer::EndDraw()
@@ -132,6 +139,13 @@ void Renderer::UpdateImguiPosition()
 
     //modelLoader.GetModel("pyramid").transform = transform;
 }
+
+struct Character {
+    unsigned int TextureID; // ID handle of the glyph texture
+    glm::ivec2   Size;      // Size of glyph
+    glm::ivec2   Bearing;   // Offset from baseline to left/top of glyph
+    unsigned int Advance;   // Horizontal offset to advance to next glyph
+};
 
 GLFWwindow* const Renderer::GetWindow()
 {

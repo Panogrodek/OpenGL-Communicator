@@ -12,13 +12,14 @@ void BatchRenderer::Init(uint32_t maxQuads)
 
 	m_QuadVertexAttribBase = nullptr;
 	m_QuadVertexAttribPtr = nullptr;
-
+	m_QuadIndexCount = 0;
 	m_QuadVertexArray = new VertexArray;
 
 	m_QuadVertexBuffer = new VertexBuffer(m_maxVertices * sizeof(QuadVertexAttrib));
 	BufferLayout layout = {
 		{ShaderDataType::Float3, "a_Position"},
 		{ShaderDataType::Float4, "a_Color"},
+		{ShaderDataType::Float2, "a_TexCoords"},
 	};
 	m_QuadVertexBuffer->SetLayout(layout);
 	m_QuadVertexArray->AddVertexBuffer(m_QuadVertexBuffer);
@@ -46,8 +47,9 @@ void BatchRenderer::Init(uint32_t maxQuads)
 
 	m_QuadVertexAttribPtr = m_QuadVertexAttribBase;
 	for (int i = 0; i < m_maxVertices; i++) {
-		m_QuadVertexAttribPtr->Position = glm::vec3(0.f);
-		m_QuadVertexAttribPtr->Color = glm::vec4(0.f);
+		m_QuadVertexAttribPtr->Position = { 0.f,0.f,0.f };
+		m_QuadVertexAttribPtr->Color = { 0.f,0.f,0.f,0.f };
+		m_QuadVertexAttribPtr->TexCoords = { 0.f,0.f };
 		m_QuadVertexAttribPtr++;
 	}
 
@@ -72,14 +74,30 @@ void BatchRenderer::Draw(Drawable* object)
 		for (int i = 0; i < object->p_vertexCount; i++) {
 			m_QuadVertexAttribPtr->Position = glm::vec3(object->p_transformedVertices[i], 1.f);
 			m_QuadVertexAttribPtr->Color = object->p_baseVertices[i].color;
+			m_QuadVertexAttribPtr->TexCoords = object->p_baseVertices[i].texCoords;
 			m_QuadVertexAttribPtr++;
 		}
 		m_QuadIndexCount += 6;
+		break;
+	case Shape::Text:
+		for (int i = 0; i < object->p_vertexCount; i++) {
+			m_QuadVertexAttribPtr->Position = glm::vec3(object->p_transformedVertices[i], 1.f);
+			m_QuadVertexAttribPtr->Color = object->p_baseVertices[i].color;
+			m_QuadVertexAttribPtr->TexCoords = object->p_baseVertices[i].texCoords;
+			m_QuadVertexAttribPtr++;
+		}
+		m_QuadIndexCount += 6 * object->p_vertexCount/4;
 		break;
 	default:
 		break;
 	}
 
+}
+
+void BatchRenderer::SceneBegin()
+{
+	m_QuadIndexCount = 0;
+	m_QuadVertexAttribPtr = m_QuadVertexAttribBase;
 }
 
 void BatchRenderer::Flush()
@@ -95,7 +113,4 @@ void BatchRenderer::Flush()
 
 	m_QuadVertexArray->Bind();
 	glDrawElements(GL_TRIANGLES, m_QuadIndexCount, GL_UNSIGNED_INT, nullptr);
-
-	m_QuadIndexCount = 0;
-	m_QuadVertexAttribPtr = m_QuadVertexAttribBase;
 }

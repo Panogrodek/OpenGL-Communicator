@@ -8,11 +8,13 @@ namespace pl {
 	enum class Shape {
 		None = 0,
 		Rectangle,
+		Text,
 	};
 
 	struct Vertex {
 		glm::vec2 position{};
 		glm::vec4 color = glm::vec4(1.0f);
+		glm::vec2 texCoords{};
 	};
 
 	class Drawable {
