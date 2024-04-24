@@ -11,10 +11,12 @@ namespace priv {
 
 namespace pl {
 	struct Character {
-		unsigned int TextureID;  // ID handle of the glyph texture
-		glm::ivec2   Size;       // Size of glyph
-		glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
-		unsigned int Advance;    // Offset to advance to next glyph
+		glm::vec2 Advance;    // Offset to advance to next glyph
+		glm::vec2 BitmapSize;
+		glm::vec2 BitmapPos;
+
+		float tx;
+		float ti;
 	};
 
 	class Font {
@@ -23,7 +25,9 @@ namespace pl {
 	private:
 		friend class priv::FontManager;
 		friend class Text;
-
+	
+		uint32_t m_RendererId;
+		glm::ivec2 m_atlasSize;
 		std::string m_name;
 		std::unordered_map<char,Character> m_characters;
 	};

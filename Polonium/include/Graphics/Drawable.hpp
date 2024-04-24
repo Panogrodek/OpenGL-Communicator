@@ -15,6 +15,7 @@ namespace pl {
 		glm::vec2 position{};
 		glm::vec4 color = glm::vec4(1.0f);
 		glm::vec2 texCoords{};
+		float texIndex{};
 	};
 
 	class Drawable {

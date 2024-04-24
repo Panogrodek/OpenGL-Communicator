@@ -20,6 +20,7 @@ void BatchRenderer::Init(uint32_t maxQuads)
 		{ShaderDataType::Float3, "a_Position"},
 		{ShaderDataType::Float4, "a_Color"},
 		{ShaderDataType::Float2, "a_TexCoords"},
+		{ShaderDataType::Float, "a_TexIndex"},
 	};
 	m_QuadVertexBuffer->SetLayout(layout);
 	m_QuadVertexArray->AddVertexBuffer(m_QuadVertexBuffer);
@@ -50,10 +51,20 @@ void BatchRenderer::Init(uint32_t maxQuads)
 		m_QuadVertexAttribPtr->Position = { 0.f,0.f,0.f };
 		m_QuadVertexAttribPtr->Color = { 0.f,0.f,0.f,0.f };
 		m_QuadVertexAttribPtr->TexCoords = { 0.f,0.f };
+		m_QuadVertexAttribPtr->TextureIndex = 0.f;
 		m_QuadVertexAttribPtr++;
 	}
 
 	m_QuadShader = new Shader("res/shaders/FlatColor.glsl");
+
+	int32_t samplers[32]{};
+	for (uint32_t i = 0; i < 32; i++)
+		samplers[i] = i;
+
+	m_Textures[0] = new Texture("res/textures/tymon.png");
+
+	m_QuadShader->Bind();
+	m_QuadShader->SetIntArray("u_Textures", samplers, 32);
 }
 
 void BatchRenderer::Destroy()
@@ -68,30 +79,44 @@ void BatchRenderer::Destroy()
 void BatchRenderer::Draw(Drawable* object)
 {
 	object->UpdateVertices();
-	switch (object->p_type)
-	{
-	case Shape::Rectangle:
-		for (int i = 0; i < object->p_vertexCount; i++) {
-			m_QuadVertexAttribPtr->Position = glm::vec3(object->p_transformedVertices[i], 1.f);
-			m_QuadVertexAttribPtr->Color = object->p_baseVertices[i].color;
-			m_QuadVertexAttribPtr->TexCoords = object->p_baseVertices[i].texCoords;
-			m_QuadVertexAttribPtr++;
-		}
-		m_QuadIndexCount += 6;
-		break;
-	case Shape::Text:
-		for (int i = 0; i < object->p_vertexCount; i++) {
-			m_QuadVertexAttribPtr->Position = glm::vec3(object->p_transformedVertices[i], 1.f);
-			m_QuadVertexAttribPtr->Color = object->p_baseVertices[i].color;
-			m_QuadVertexAttribPtr->TexCoords = object->p_baseVertices[i].texCoords;
-			m_QuadVertexAttribPtr++;
-		}
-		m_QuadIndexCount += 6 * object->p_vertexCount/4;
-		break;
-	default:
-		break;
-	}
+	if (object->p_type != Shape::Rectangle && object->p_type != Shape::Text)
+		return;
 
+	for (int i = 0; i < object->p_vertexCount; i++) {
+		m_QuadVertexAttribPtr->Position = glm::vec3(object->p_transformedVertices[i], 1.f);
+		m_QuadVertexAttribPtr->Color = object->p_baseVertices[i].color;
+		m_QuadVertexAttribPtr->TexCoords = object->p_baseVertices[i].texCoords;
+		m_QuadVertexAttribPtr++;
+	}
+	m_QuadIndexCount += 6 * object->p_vertexCount / 4;
+
+//this would be the correct way for rendering other primitive types (triangles, lines, circles)
+#pragma region other way
+	//switch (object->p_type)
+	//{
+	//case Shape::Rectangle:
+	//	for (int i = 0; i < object->p_vertexCount; i++) {
+	//		m_QuadVertexAttribPtr->Position = glm::vec3(object->p_transformedVertices[i], 1.f);
+	//		m_QuadVertexAttribPtr->Color = object->p_baseVertices[i].color;
+	//		m_QuadVertexAttribPtr->TexCoords = object->p_baseVertices[i].texCoords;
+	//		m_QuadVertexAttribPtr->TextureIndex = object->p_baseVertices[i].texIndex;
+	//		m_QuadVertexAttribPtr++;
+	//	}
+	//	m_QuadIndexCount += 6;
+	//	break;
+	//case Shape::Text:
+	//	for (int i = 0; i < object->p_vertexCount; i++) {
+	//		m_QuadVertexAttribPtr->Position = glm::vec3(object->p_transformedVertices[i], 1.f);
+	//		m_QuadVertexAttribPtr->Color = object->p_baseVertices[i].color;
+	//		m_QuadVertexAttribPtr->TexCoords = object->p_baseVertices[i].texCoords;
+	//		m_QuadVertexAttribPtr++;
+	//	}
+	//	m_QuadIndexCount += 6 * object->p_vertexCount/4;
+	//	break;
+	//default:
+	//	break;
+	//}
+#pragma endregion other way
 }
 
 void BatchRenderer::SceneBegin()
@@ -105,9 +130,9 @@ void BatchRenderer::Flush()
 	uint32_t dataSize = (uint8_t*)m_QuadVertexAttribPtr - (uint8_t*)m_QuadVertexAttribBase;
 	m_QuadVertexBuffer->SetData(m_QuadVertexAttribBase, dataSize);
 
-	//for (uint32_t i = 0; i < m_TextureSlotIndex; i++) {
-	//	m_TextureSlots[i]->Bind(i);
-	//}
+	for (uint32_t i = 0; i < 1; i++) {
+		m_Textures[i]->Bind(i);
+	}
 
 	m_QuadShader->Bind();
 

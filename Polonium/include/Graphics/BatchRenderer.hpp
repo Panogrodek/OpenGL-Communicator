@@ -2,6 +2,7 @@
 #include "VertexArray.hpp"
 #include "Drawable.hpp"
 #include "Shader.hpp"
+#include "Texture.hpp"
 
 namespace priv {
 	class Renderer;
@@ -10,6 +11,7 @@ namespace priv {
 		glm::vec3 Position{};
 		glm::vec4 Color{};
 		glm::vec2 TexCoords{};
+		float TextureIndex{};
 	};
 
 	class BatchRenderer {
@@ -34,6 +36,8 @@ namespace priv {
 		pl::VertexArray* m_QuadVertexArray = nullptr;
 		pl::VertexBuffer* m_QuadVertexBuffer = nullptr;
 		pl::IndexBuffer* m_QuadIndexBuffer = nullptr;
+
+		pl::Texture* m_Textures[32];
 	};
 }
 

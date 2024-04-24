@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include <array>
-
+#include <SPDLOG/spdlog.h>
 using namespace pl;
 
 #include <glm/gtc/type_ptr.hpp>
@@ -113,7 +113,6 @@ void Shader::Compile(const std::unordered_map<GLenum, std::string>& shaderSource
 
 			std::vector<GLchar> infoLog(maxLength);
 			glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
-
 			glDeleteShader(shader);
 
 			ASSERT(true); //Shader failed to compile

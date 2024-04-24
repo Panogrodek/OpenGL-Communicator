@@ -28,7 +28,7 @@ void Renderer::InitGL()
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Create a GLFWwindow object that we can use for GLFW's functions
-    m_window = glfwCreateWindow(1366, 1080, "Client", nullptr, nullptr);
+    m_window = glfwCreateWindow(1080, 720, "Client", nullptr, nullptr);
     glfwMakeContextCurrent(m_window);
 
     //// Set the required callback functions

@@ -46,35 +46,47 @@ void Text::InitVertices()
 
 	float base = p_position.x;
 	int charCounter = 0;
+	glm::vec2 pos = p_position;
+	glm::vec2 size = p_size;
+
     for (auto& c : m_stringText)
     {
         Character ch = m_font->m_characters[c];
 
-        float xpos = base + ch.Bearing.x * p_size.x;
-        float ypos = p_position.y - (ch.Size.y - ch.Bearing.y) * p_position.y;
+		float x2 = pos.x + ch.BitmapPos.x * size.x;
+		float y2 = -pos.y - ch.BitmapPos.y * size.y;
+		float w = ch.BitmapSize.x * size.x;
+		float h = ch.BitmapSize.y * size.y;
 
-        float w = ch.Size.x * p_size.x;
-        float h = ch.Size.y * p_size.y;
+		/* Advance the cursor to the start of the next character */
+		pos.x += ch.Advance.x * size.x;
+		pos.y += ch.Advance.y * size.y;
+
+		/* Skip glyphs that have no pixels */
+		if (!w || !h)
+			continue;
         // update VBO for each character
 		
 		int i = charCounter * 4;
-		p_baseVertices[i+0].position = glm::vec2{ xpos,ypos };
-		p_baseVertices[i+1].position = glm::vec2{ xpos,ypos + h };
-		p_baseVertices[i+2].position = glm::vec2{ xpos + w,ypos + h};
-		p_baseVertices[i+3].position = glm::vec2{ xpos + w,ypos };
+		p_baseVertices[i+0].position = glm::vec2{ pos.x		,pos.y};
+		p_baseVertices[i+1].position = glm::vec2{ pos.x		,pos.y + h };
+		p_baseVertices[i+2].position = glm::vec2{ pos.x + w	,pos.y + h};
+		p_baseVertices[i+3].position = glm::vec2{ pos.x + w	,pos.y };
 
 		p_baseVertices[i + 0].color = glm::vec4{1.0f};
 		p_baseVertices[i + 1].color = glm::vec4{1.0f};
 		p_baseVertices[i + 2].color = glm::vec4{1.0f};
 		p_baseVertices[i + 3].color = glm::vec4{1.0f};
 
-		p_baseVertices[i+0].texCoords = glm::vec2{ 0.f,0.f };
-		p_baseVertices[i+1].texCoords = glm::vec2{ 0.f,1.f };
-		p_baseVertices[i+2].texCoords = glm::vec2{ 1.f,1.f };
-		p_baseVertices[i+3].texCoords = glm::vec2{ 1.f,0.f };
-
-        // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        base += (ch.Advance >> 6) * p_size.x; // bitshift by 6 to get value in pixels (2^6 = 64)
+		p_baseVertices[i+0].texCoords = glm::vec2{ ch.tx,ch.BitmapSize.y / m_font->m_atlasSize.y};
+		p_baseVertices[i+1].texCoords = glm::vec2{ ch.tx,0.f };
+		p_baseVertices[i+2].texCoords = glm::vec2{ ch.tx + ch.BitmapSize.x / m_font->m_atlasSize.x,0.f };
+		p_baseVertices[i+3].texCoords = glm::vec2{ ch.tx + ch.BitmapSize.x / m_font->m_atlasSize.x,ch.BitmapSize.y / m_font->m_atlasSize.y };
+		
+		p_baseVertices[i + 0].texIndex = 1;
+		p_baseVertices[i + 1].texIndex = 1;
+		p_baseVertices[i + 2].texIndex = 1;
+		p_baseVertices[i + 3].texIndex = 1;
 		charCounter++;
     }
 
