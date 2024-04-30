@@ -1,8 +1,6 @@
 #pragma once
-#include "freetype/ft2build.h"
-#include FT_FREETYPE_H  
-
 #include <unordered_map>
+#include "Texture.hpp"
 #include <string>
 
 namespace priv {
@@ -11,12 +9,10 @@ namespace priv {
 
 namespace pl {
 	struct Character {
-		glm::vec2 Advance;    // Offset to advance to next glyph
-		glm::vec2 BitmapSize;
-		glm::vec2 BitmapPos;
-
-		float tx;
-		float ti;
+		glm::vec2 pngPos;
+		glm::vec2 pngSize;
+		glm::vec2 offset;
+		float xAdvance;
 	};
 
 	class Font {
@@ -26,26 +22,24 @@ namespace pl {
 		friend class priv::FontManager;
 		friend class Text;
 	
-		uint32_t m_RendererId;
+		pl::Texture* m_fontTexture;
 		glm::ivec2 m_atlasSize;
 		std::string m_name;
-		std::unordered_map<char,Character> m_characters;
+		std::unordered_map<char, Character> m_characters;
 	};
 }
 
 namespace priv {
 	class FontManager {
 	public:
-		bool InitFreeType();
-		bool CloseFreeType();
-
 		void LoadFont(std::string filePath, std::string name = "");
+		void LoadFont(std::string filePathPNG, std::string filePathFNT, std::string name);
 		pl::Font GetFont(std::string name);
 		
 	private:
 		bool CheckIfExists(std::string name);
+		bool ProcessCharacter(std::string line, pl::Font& font);
 
-		FT_Library m_ft;
 		std::unordered_map<std::string, pl::Font> m_fonts;
 	};
 }

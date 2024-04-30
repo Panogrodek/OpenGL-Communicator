@@ -1,6 +1,5 @@
 #include "plpch.h"
 #include "Graphics/Texture.hpp"
-#define STB_IMAGE_IMPLEMENTATION
 #include "STB_IMAGE/stb_image.h"
 
 using namespace pl;
@@ -8,8 +7,8 @@ using namespace pl;
 Texture::Texture(uint32_t width, uint32_t height)
 	: m_Width(width), m_Height(height)
 {
-	m_InternalFormat = GL_RGBA8;
-	m_DataFormat = GL_RGBA;
+	m_InternalFormat = GL_RED;
+	m_DataFormat =	GL_UNSIGNED_BYTE;
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
 	glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
@@ -68,7 +67,8 @@ void Texture::SetData(void* data, glm::ivec2 size, glm::ivec2 pos)
 {
 	if (size.x > m_Width || size.y > m_Height)
 		return;
-	glTextureSubImage2D(m_RendererID, 0, pos.x, pos.y, size.x, size.y, m_DataFormat, GL_UNSIGNED_BYTE, data);
+	glBindTexture(GL_TEXTURE_2D,m_RendererID);
+	glTextureSubImage2D(m_RendererID, 0, pos.x, pos.y, size.x, size.y, GL_RED, GL_UNSIGNED_BYTE, data);
 }
 
 Texture::~Texture()

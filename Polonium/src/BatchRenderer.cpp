@@ -86,6 +86,7 @@ void BatchRenderer::Draw(Drawable* object)
 		m_QuadVertexAttribPtr->Position = glm::vec3(object->p_transformedVertices[i], 1.f);
 		m_QuadVertexAttribPtr->Color = object->p_baseVertices[i].color;
 		m_QuadVertexAttribPtr->TexCoords = object->p_baseVertices[i].texCoords;
+		m_QuadVertexAttribPtr->TextureIndex = object->p_baseVertices[i].texIndex;
 		m_QuadVertexAttribPtr++;
 	}
 	m_QuadIndexCount += 6 * object->p_vertexCount / 4;
@@ -133,6 +134,8 @@ void BatchRenderer::Flush()
 	for (uint32_t i = 0; i < 1; i++) {
 		m_Textures[i]->Bind(i);
 	}
+	
+	glBindTextureUnit(1,2);
 
 	m_QuadShader->Bind();
 

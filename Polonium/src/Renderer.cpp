@@ -62,12 +62,10 @@ void Renderer::InitGL()
 
     //this should not be here
     batchRenderer.Init(10000);
-    fontManager.InitFreeType();
 }
 
 void Renderer::Destroy()
 {
-    fontManager.CloseFreeType();
     batchRenderer.Destroy();
     glfwTerminate();
 

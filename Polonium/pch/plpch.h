@@ -5,6 +5,7 @@
 #include <string>
 #include <GLM/glm.hpp>
 #include <SPDLOG/spdlog.h>
+#include "Utilities/Utilities.hpp"
 
 #ifdef DEBUG
 #define ASSERT(x) {if(x) __debugbreak();}
