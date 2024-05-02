@@ -1,4 +1,5 @@
 #pragma once
+#include "Utilities/AABB2D.hpp"
 
 namespace priv {
 	class BatchRenderer;
@@ -35,7 +36,7 @@ namespace pl {
 		virtual glm::vec2 GetPosition() const;
 		virtual glm::vec2 GetSize() const;
 		virtual float GetRotation() const;
-
+		virtual pl::AABB2D GetAABB2D();
 		//Rendering
 		virtual void SetColor(glm::vec4 color);
 		virtual glm::vec4 GetColor() const;
@@ -44,6 +45,8 @@ namespace pl {
 		friend class priv::BatchRenderer;
 		virtual void InitVertices() = 0;
 		virtual void UpdateVertices() = 0; //this determines what we do in the transform
+
+		pl::AABB2D p_aabb;
 
 		Vertex* p_baseVertices = nullptr;
 		glm::vec2* p_transformedVertices = nullptr;
@@ -55,5 +58,6 @@ namespace pl {
 		glm::vec2 p_size{};
 		float p_rotation{};
 		bool p_updateVertices = true;
+		bool p_updateAABB2D = true;
 	};
 }

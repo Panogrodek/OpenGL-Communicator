@@ -18,6 +18,8 @@ namespace pl {
 	class Font {
 	public:
 		Font(std::string name = "");
+
+		Character GetCharacter(char c);
 	private:
 		friend class priv::FontManager;
 		friend class Text;

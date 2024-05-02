@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "AABB2D.hpp"
 
 inline std::string ErasePart(char symbol, std::string& line)
 {

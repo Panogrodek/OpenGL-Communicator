@@ -5,19 +5,25 @@
 
 using namespace pl;
 
-Text::Text(std::string stringText, Font* font, glm::vec2 position, glm::vec2 size) :
+Text::Text()
+{
+}
+
+Text::Text(std::string font, std::string stringText, glm::vec2 position, glm::vec2 size) :
 	m_stringText(stringText), m_font(font)
 {
     p_position = position;
     p_size = size;
 	p_type = Shape::Text;
-	InitVertices();
+	if(m_font != "")
+		InitVertices();
 }
 
 void Text::SetString(std::string stringText)
 {
 	m_stringText = stringText;
-	InitVertices();
+	if(m_font != "")
+		InitVertices();
 }
 
 std::string Text::GetString() const
@@ -25,72 +31,104 @@ std::string Text::GetString() const
 	return m_stringText;
 }
 
-void Text::SetFont(Font* font)
+void Text::SetFont(Font& font)
 {
-	m_font = font;
+	if (m_font != "")
+		UpdateVertices();
 }
 
-Font* Text::GetFont()
+Font& Text::GetFont()
 {
-	return m_font;
+	return Font();
+}
+
+void Text::SetTextBounds(AABB2D bounds)
+{
+	m_textBounds = bounds;
+	if (bounds.GetArea() != 0.f) {
+		p_position = glm::vec2(bounds.lowerBound.x,bounds.upperBound.y);
+	}
+	InitVertices();
+}
+
+AABB2D Text::GetTextBounds(AABB2D bounds) const
+{
+	return m_textBounds;
 }
 
 void Text::InitVertices()
 {
-	p_vertexCount = m_stringText.length() * 4; //each char quad has 4 vertices
+	//cleaning previous vertices
+	int newline = 0;
+	for (auto& c : m_stringText)
+		if (c == '\n') newline++;
+
 	if (p_baseVertices != nullptr)
 		delete[] p_baseVertices;
 	if (p_transformedVertices != nullptr)
 		delete[] p_transformedVertices;
 
-	p_baseVertices = new Vertex[p_vertexCount];
-	p_transformedVertices = new glm::vec2[p_vertexCount];
+	p_vertexCount = (m_stringText.length()-newline) * 4; //each char quad has 4 vertices
+	p_baseVertices = new Vertex[p_vertexCount]{};
+	p_transformedVertices = new glm::vec2[p_vertexCount]{};
 
-	float cursorBase = p_position.x;
-	int charCounter = 0;
+	float xmax = INFINITY;
 	glm::vec2 pos = p_position;
+	if (m_textBounds.GetArea() != 0.f) {
+		xmax = pos.x + (m_textBounds.upperBound.x - m_textBounds.lowerBound.x);
+	}
+
+	//some text attribs
+	float lineSkip = 64;
+	int charVertexCount = 0;
 
     for (auto& c : m_stringText)
     {
-        Character ch = m_font->m_characters[c];
+		if (c == '\n') {
+			pos.x = p_position.x;
+			pos.y += lineSkip;
+			continue;
+		}
+        auto& ch = fontManager.GetFont(m_font).GetCharacter(c);
 
-		float x = pos.x;
-		float y = -pos.y;
+		float x = pos.x + ch.offset.x;
+		float y = -pos.y - ch.offset.y;
 		float w = ch.pngSize.x;
 		float h = ch.pngSize.y;
 
-		/* Advance the cursor to the start of the next character */
-
-		//pos.y += ch.Advance.y * size.y;
+		if (x + w > xmax) {
+			pos.x = p_position.x;
+			pos.y += lineSkip;
+			
+			x = pos.x + ch.offset.x;
+			y = -pos.y - ch.offset.y;
+		}
 		pos.x += ch.xAdvance;
 
 		/* Skip glyphs that have no pixels */
-		if (!w || !h)
-			continue;
+		//if (!w || !h)
+		//	continue;
         // update VBO for each character
-		
-		int i = charCounter * 4;
-		p_baseVertices[i+0].position = glm::vec2{ x		,y		};
-		p_baseVertices[i+1].position = glm::vec2{ x		,y + h	};
-		p_baseVertices[i+2].position = glm::vec2{ x + w	,y + h	};
-		p_baseVertices[i+3].position = glm::vec2{ x + w	,y		};
-
-		p_baseVertices[i + 0].color = glm::vec4{1.0f};
-		p_baseVertices[i + 1].color = glm::vec4{1.0f};
-		p_baseVertices[i + 2].color = glm::vec4{1.0f};
-		p_baseVertices[i + 3].color = glm::vec4{1.0f};
-
-		p_baseVertices[i+1].texCoords = 1.f/512.f * glm::vec2{ ch.pngPos.x + ch.pngSize.x * 0.0f, 512 - (ch.pngPos.y + ch.pngSize.y * 0.0f)};
-		p_baseVertices[i+0].texCoords = 1.f/512.f * glm::vec2{ ch.pngPos.x + ch.pngSize.x * 0.0f, 512 - (ch.pngPos.y + ch.pngSize.y * 1.0f)};
-		p_baseVertices[i+3].texCoords = 1.f/512.f * glm::vec2{ ch.pngPos.x + ch.pngSize.x * 1.0f, 512 - (ch.pngPos.y + ch.pngSize.y * 1.0f)};
-		p_baseVertices[i+2].texCoords = 1.f/512.f * glm::vec2{ ch.pngPos.x + ch.pngSize.x * 1.0f, 512 - (ch.pngPos.y + ch.pngSize.y * 0.0f)};
-
-		p_baseVertices[i + 0].texIndex = 1;
-		p_baseVertices[i + 1].texIndex = 1;
-		p_baseVertices[i + 2].texIndex = 1;
-		p_baseVertices[i + 3].texIndex = 1;
-		charCounter++;
-
+		p_baseVertices[charVertexCount + 0].position = glm::vec2{ x		,y - h	};
+		p_baseVertices[charVertexCount + 1].position = glm::vec2{ x		,y };
+		p_baseVertices[charVertexCount + 2].position = glm::vec2{ x + w	,y };
+		p_baseVertices[charVertexCount + 3].position = glm::vec2{ x + w	,y - h	};
+					   
+		p_baseVertices[charVertexCount + 0].color = glm::vec4{1.0f};
+		p_baseVertices[charVertexCount + 1].color = glm::vec4{1.0f};
+		p_baseVertices[charVertexCount + 2].color = glm::vec4{1.0f};
+		p_baseVertices[charVertexCount + 3].color = glm::vec4{1.0f};
+					   
+		p_baseVertices[charVertexCount + 1].texCoords = 1.f/512.f * glm::vec2{ ch.pngPos.x + ch.pngSize.x * 0.0f, 512 - (ch.pngPos.y + ch.pngSize.y * 0.0f)};
+		p_baseVertices[charVertexCount + 0].texCoords = 1.f/512.f * glm::vec2{ ch.pngPos.x + ch.pngSize.x * 0.0f, 512 - (ch.pngPos.y + ch.pngSize.y * 1.0f)};
+		p_baseVertices[charVertexCount + 3].texCoords = 1.f/512.f * glm::vec2{ ch.pngPos.x + ch.pngSize.x * 1.0f, 512 - (ch.pngPos.y + ch.pngSize.y * 1.0f)};
+		p_baseVertices[charVertexCount + 2].texCoords = 1.f/512.f * glm::vec2{ ch.pngPos.x + ch.pngSize.x * 1.0f, 512 - (ch.pngPos.y + ch.pngSize.y * 0.0f)};
+					   
+		p_baseVertices[charVertexCount + 0].texIndex = 1;
+		p_baseVertices[charVertexCount + 1].texIndex = 1;
+		p_baseVertices[charVertexCount + 2].texIndex = 1;
+		p_baseVertices[charVertexCount + 3].texIndex = 1;
+		charVertexCount += 4;
     }
 
 	for (int i = 0; i < p_vertexCount; i++) {

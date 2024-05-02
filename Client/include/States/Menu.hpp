@@ -11,4 +11,5 @@ public:
 	virtual void Render() override;
 private:
 	pl::Camera* m_camera;
+	pl::Text* m_text;
 };

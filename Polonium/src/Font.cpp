@@ -12,6 +12,14 @@ Font::Font(std::string name)
     m_name = name;
 }
 
+Character Font::GetCharacter(char c)
+{
+    if (m_characters.find(c) != m_characters.end()) {
+        return m_characters[c];
+    }
+    return Character();
+}
+
 void FontManager::LoadFont(std::string filePath, std::string name)
 {
     std::string filePathPNG = "";
