@@ -49,23 +49,20 @@ void Text::InitVertices()
 	float cursorBase = p_position.x;
 	int charCounter = 0;
 	glm::vec2 pos = p_position;
-	glm::vec2 size = p_size;
 
     for (auto& c : m_stringText)
     {
         Character ch = m_font->m_characters[c];
 
-		float x = pos.x + ch.pngPos.x * size.x;
-		float y = -pos.y - ch.pngPos.y * size.y;
-		float w = ch.pngSize.x * size.x;
-		float h = ch.pngSize.y * size.y;
-
-		glm::vec2 off = glm::vec2(ch.offset.x * size.x, ch.offset.y * size.y);
+		float x = pos.x;
+		float y = -pos.y;
+		float w = ch.pngSize.x;
+		float h = ch.pngSize.y;
 
 		/* Advance the cursor to the start of the next character */
 
 		//pos.y += ch.Advance.y * size.y;
-		pos.x += w * size.x + ch.xAdvance * size.x;
+		pos.x += ch.xAdvance;
 
 		/* Skip glyphs that have no pixels */
 		if (!w || !h)
@@ -73,10 +70,10 @@ void Text::InitVertices()
         // update VBO for each character
 		
 		int i = charCounter * 4;
-		p_baseVertices[i+0].position = glm::vec2{ pos.x		+ off.x,pos.y		- off.y};
-		p_baseVertices[i+1].position = glm::vec2{ pos.x		+ off.x,pos.y + h	- off.y};
-		p_baseVertices[i+2].position = glm::vec2{ pos.x + w	+ off.x,pos.y + h	- off.y};
-		p_baseVertices[i+3].position = glm::vec2{ pos.x + w	+ off.x,pos.y		- off.y};
+		p_baseVertices[i+0].position = glm::vec2{ x		,y		};
+		p_baseVertices[i+1].position = glm::vec2{ x		,y + h	};
+		p_baseVertices[i+2].position = glm::vec2{ x + w	,y + h	};
+		p_baseVertices[i+3].position = glm::vec2{ x + w	,y		};
 
 		p_baseVertices[i + 0].color = glm::vec4{1.0f};
 		p_baseVertices[i + 1].color = glm::vec4{1.0f};

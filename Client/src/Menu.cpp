@@ -5,7 +5,7 @@
 Menu::Menu()
 {
 	pl::fontManager.LoadFont("res/fonts/arial.fnt", "test");
-	m_camera = new pl::OrthographicCamera(-1000.f, 1000.f, -1000.f, 1000.f);
+	m_camera = new pl::OrthographicCamera(-800.f, 800.f, -500.f, 500.f);
 }
 
 Menu::~Menu()
@@ -33,7 +33,7 @@ void Menu::Render()
 	//delete shape2;
 
 
-	pl::Text* text = new pl::Text("testo testo", &pl::fontManager.GetFont("test"), { -0.0f,0.f });
+	pl::Text* text = new pl::Text("This is a test text!", &pl::fontManager.GetFont("test"), {-0.5f,0.f});
 	text->Draw();
 	delete text;
 }
