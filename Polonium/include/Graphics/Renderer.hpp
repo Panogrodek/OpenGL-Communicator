@@ -4,6 +4,7 @@
 
 #include "Graphics/Shader.hpp"
 #include "Graphics/VertexArray.hpp"
+#include "Graphics/Camera.hpp"
 #include "Drawable.hpp"
 
 namespace priv {
@@ -21,11 +22,13 @@ namespace priv {
 
 		GLFWwindow* const GetWindow();
 
-		void UpdateImguiPosition();
+		pl::Camera* GetCamera();
+		void SetCamera(pl::Camera* camera);
+		
 	private:
 		GLFWwindow* m_window;
 		glm::vec2 m_mousePos{};
-
+		pl::Camera* m_camera = nullptr;
 	};
 }
 namespace pl {

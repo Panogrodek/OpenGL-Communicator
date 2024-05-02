@@ -100,8 +100,6 @@ void Renderer::BeginDraw()
 
 void Renderer::EndDraw()
 {
-    UpdateImguiPosition();
-
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -119,33 +117,17 @@ glm::vec2 Renderer::GetMousePosition()
     return m_mousePos;
 }
 
-void Renderer::UpdateImguiPosition()
-{
-    //glm::vec3 position = modelLoader.GetModel("pyramid").transform[3];
-    //glm::vec3& scale = modelLoader.GetModel("pyramid").scale;
-    //glm::vec3& rotation = modelLoader.GetModel("pyramid").rotation;
-
-    //ImGui::Begin("Demo window");
-    //ImGui::SliderFloat3("position", glm::value_ptr(position), -10.f, 10.f);
-    //ImGui::SliderFloat3("scale", glm::value_ptr(scale), -10.f, 10.f);
-    //ImGui::SliderFloat3("rotation", glm::value_ptr(rotation), -10.f, 10.f);
-    //ImGui::End();
-
-    //glm::mat4 rot = glm::eulerAngleYXZ(rotation.y, rotation.x, rotation.z);
-    //glm::mat4 translate = glm::translate(glm::mat4(1.f), position) * rot;
-    //glm::mat4 transform = glm::scale(translate, scale);
-
-    //modelLoader.GetModel("pyramid").transform = transform;
-}
-
-struct Character {
-    unsigned int TextureID; // ID handle of the glyph texture
-    glm::ivec2   Size;      // Size of glyph
-    glm::ivec2   Bearing;   // Offset from baseline to left/top of glyph
-    unsigned int Advance;   // Horizontal offset to advance to next glyph
-};
-
 GLFWwindow* const Renderer::GetWindow()
 {
     return m_window;
+}
+
+Camera* Renderer::GetCamera()
+{
+    return m_camera;
+}
+
+void Renderer::SetCamera(pl::Camera* camera)
+{
+    m_camera = camera;
 }

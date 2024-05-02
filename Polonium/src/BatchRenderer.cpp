@@ -1,5 +1,6 @@
 #include "plpch.h"
 #include "Graphics/BatchRenderer.hpp"
+#include "Graphics/Renderer.hpp"
 #include <GL/glew.h>
 
 using namespace pl;
@@ -83,7 +84,7 @@ void BatchRenderer::Draw(Drawable* object)
 		return;
 
 	for (int i = 0; i < object->p_vertexCount; i++) {
-		m_QuadVertexAttribPtr->Position = glm::vec3(object->p_transformedVertices[i], 1.f);
+		m_QuadVertexAttribPtr->Position = glm::vec3(object->p_transformedVertices[i], 0.f);
 		m_QuadVertexAttribPtr->Color = object->p_baseVertices[i].color;
 		m_QuadVertexAttribPtr->TexCoords = object->p_baseVertices[i].texCoords;
 		m_QuadVertexAttribPtr->TextureIndex = object->p_baseVertices[i].texIndex;
@@ -134,7 +135,12 @@ void BatchRenderer::Flush()
 	for (uint32_t i = 0; i < 1; i++) {
 		m_Textures[i]->Bind(i);
 	}
-	
+
+	auto* camera = pl::renderer.GetCamera();
+	if (camera == nullptr)
+		m_QuadShader->SetMat4("u_ViewProjection", glm::mat4(1.f));
+	else
+		m_QuadShader->SetMat4("u_ViewProjection",camera->GetViewProjection());
 	glBindTextureUnit(1,2);
 
 	m_QuadShader->Bind();

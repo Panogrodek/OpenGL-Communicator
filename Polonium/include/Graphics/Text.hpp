@@ -5,7 +5,7 @@
 namespace pl {
 	class Text : public Drawable {
 	public:
-		Text(std::string stringText = "", Font* font = nullptr, glm::vec2 position = glm::vec2{0.f}, glm::vec2 size = glm::vec2{0.f});
+		Text(std::string stringText = "", Font* font = nullptr, glm::vec2 position = glm::vec2{0.f}, glm::vec2 size = glm::vec2{1.f});
 
 		void SetString(std::string stringText);
 		std::string GetString() const;
