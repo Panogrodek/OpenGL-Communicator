@@ -14,5 +14,4 @@ public:
 private:
 	pl::Camera* m_camera;
 	Textbox* m_textbox;
-	LogBox* m_logbox;
 };

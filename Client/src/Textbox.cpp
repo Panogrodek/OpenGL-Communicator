@@ -11,8 +11,6 @@ Textbox::Textbox(pl::AABB2D aabb)
 	glm::vec2 size = aabb.upperBound - aabb.lowerBound;
 	m_body = new pl::RectangleShape(aabb.lowerBound + size / 2.f, size);
 	m_text = new pl::Text("arial");
-	m_text->Update();
-	m_text->SetString("kuba na tescia");
 	m_text->SetTextBounds(aabb);
 }
 
@@ -38,7 +36,7 @@ void Textbox::Update(){
 			pl::inputGuard.Lock(c);
 			if (!shiftPressed) {
 				//we shift the char value by 32 for all letters (to make them small)
-				m_text->SetString(m_text->GetString() + char(c + 32 * (c > 64 && c < 91)));
+				m_text->AddChar(char(c + 32 * (c > 64 && c < 91)));
 			}
 			else
 				HandleShift(c);
@@ -50,18 +48,18 @@ void Textbox::Update(){
 	if (backspace == pl::KeyCode::PRESS || backspace == pl::KeyCode::REPEAT) {
 		pl::inputGuard.Lock(GLFW_KEY_BACKSPACE);
 		std::string textString = m_text->GetString();
-		m_text->SetString(textString.substr(0, textString.size() - 1));
+		m_text->RemoveLast();
 	}
 
 	auto& enter = pl::inputGuard[GLFW_KEY_ENTER];
 	if (enter == pl::KeyCode::PRESS || enter == pl::KeyCode::REPEAT) {
 		pl::inputGuard.Lock(GLFW_KEY_ENTER);
 		if (shiftPressed) {
-			m_text->SetString(m_text->GetString() + '\n');
+			m_text->AddChar('\n');
 		}
 		else if(m_text->GetString() != "") { //we dont send empty messages
 			spdlog::info("Sending message {}", m_text->GetString());
-			pl::Packet* packet = new pl::Packet(pl::PacketType::ChatMessage);
+			pl::Packet* packet = new pl::Packet(pl::PacketType::ChatMessage, pl::ChatType::HasSendMessage);
 			*packet << m_text->GetString();
 			client.SendPacket(packet);
 			m_text->SetString("");
@@ -101,67 +99,67 @@ void Textbox::HandleShift(char c)
 	switch (c)
 	{
 	case '1':										  //WHY?
-		m_text->SetString(m_text->GetString() + '!'); //49 -> 33
+		m_text->AddChar('!'); //49 -> 33
 		break;
 	case '2':
-		m_text->SetString(m_text->GetString() + '@'); //50 -> 64
+		m_text->AddChar('@'); //50 -> 64
 		break;
 	case '3':
-		m_text->SetString(m_text->GetString() + '#'); //51 -> 35
+		m_text->AddChar('#'); //51 -> 35
 		break;
 	case '4':
-		m_text->SetString(m_text->GetString() + '$');
+		m_text->AddChar('$');
 		break;
 	case '5':
-		m_text->SetString(m_text->GetString() + '%');
+		m_text->AddChar('%');
 		break;
 	case '6':
-		m_text->SetString(m_text->GetString() + '^');
+		m_text->AddChar('^');
 		break;
 	case '7':
-		m_text->SetString(m_text->GetString() + '&');
+		m_text->AddChar('&');
 		break;
 	case '8':
-		m_text->SetString(m_text->GetString() + '*');
+		m_text->AddChar('*');
 		break;
 	case '9':
-		m_text->SetString(m_text->GetString() + '(');
+		m_text->AddChar('(');
 		break;
 	case '0':
-		m_text->SetString(m_text->GetString() + ')');
+		m_text->AddChar(')');
 		break;
 	case '-':
-		m_text->SetString(m_text->GetString() + '_');
+		m_text->AddChar('_');
 		break;
 	case '=':
-		m_text->SetString(m_text->GetString() + '+');
+		m_text->AddChar('+');
 		break;
 	case '[':
-		m_text->SetString(m_text->GetString() + '{');
+		m_text->AddChar('{');
 		break;
 	case ']':
-		m_text->SetString(m_text->GetString() + '}');
+		m_text->AddChar('}');
 		break;
 	case '\\':
-		m_text->SetString(m_text->GetString() + '|');
+		m_text->AddChar('|');
 		break;
 	case ';':
-		m_text->SetString(m_text->GetString() + ':');
+		m_text->AddChar(':');
 		break;
 	case '\'':
-		m_text->SetString(m_text->GetString() + '"');
+		m_text->AddChar('"');
 		break;
 	case ',':
-		m_text->SetString(m_text->GetString() + '<');
+		m_text->AddChar('<');
 		break;
 	case '.':
-		m_text->SetString(m_text->GetString() + '>');
+		m_text->AddChar('>');
 		break;
 	case '/':
-		m_text->SetString(m_text->GetString() + '?');
+		m_text->AddChar('?');
 		break;
 	default:
-		m_text->SetString(m_text->GetString() + c); //normal characters
+		m_text->AddChar(c); //normal characters
 		break;
 	}
 }

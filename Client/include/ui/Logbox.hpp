@@ -1,18 +1,26 @@
 #pragma once
 #include "Graphics/Graphics.hpp"
 
-class LogBox {
-public:
-	LogBox(pl::AABB2D aabb = pl::AABB2D{});
-	~LogBox();
-	void Update();
-	void Render();
+namespace priv {
 
-	pl::RectangleShape& GetBody();
+	class LogBox {
+	public:
+		LogBox() {};
+		void Init(pl::AABB2D aabb);
+		~LogBox();
 
-	static void AddMessage(std::string message);
-private:
-	static std::vector<std::string> s_messages;
-	pl::RectangleShape* m_body;
-	pl::Text* m_text;
-};
+		void Update();
+		void Render();
+
+		pl::RectangleShape& GetBody();
+		pl::Text& GetText();
+
+		void AddMessage(std::string message);
+	private:
+		std::vector<std::string> s_incomingMessages;
+		pl::RectangleShape* m_body;
+		pl::Text* m_text;
+	};
+}
+
+inline priv::LogBox logBox;

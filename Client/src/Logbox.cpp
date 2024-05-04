@@ -1,16 +1,15 @@
 #include "pch.h"
 #include "ui/Logbox.hpp"
 
-std::vector<std::string> LogBox::s_messages;
+using namespace priv;
 
-LogBox::LogBox(pl::AABB2D aabb)
+void LogBox::Init(pl::AABB2D aabb)
 {
 	glm::vec2 size = aabb.upperBound - aabb.lowerBound;
-	m_body = new pl::RectangleShape(aabb.lowerBound + size/2.f,size);
+	m_body = new pl::RectangleShape(aabb.lowerBound + size / 2.f, size);
 
 	m_text = new pl::Text("arial");
-	m_text->Update();
-	m_text->SetString("kuba na tescia");
+	m_text->SetSize({ 0.5f,0.5f });
 	m_text->SetTextBounds(aabb);
 }
 
@@ -22,12 +21,6 @@ LogBox::~LogBox()
 
 void LogBox::Update()
 {
-	std::string all;
-	for (auto& s : s_messages) {
-		all += s;
-		all += '\n';
-	}
-	m_text->SetString(all);
 }
 
 void LogBox::Render()
@@ -41,7 +34,13 @@ pl::RectangleShape& LogBox::GetBody()
 	return *m_body;
 }
 
+pl::Text& priv::LogBox::GetText()
+{
+	return *m_text;
+}
+
 void LogBox::AddMessage(std::string message)
 {
-	s_messages.push_back(message);
+	s_incomingMessages.push_back(message);
+	m_text->AddString(message);
 }

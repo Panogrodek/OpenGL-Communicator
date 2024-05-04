@@ -6,10 +6,11 @@
 
 using namespace pl;
 
-Packet::Packet(PacketType type)
+Packet::Packet(PacketType type, ChatType chat)
 {
 	Clear();
 	SetPacketType(type);
+	SetChatmessageType(chat);
 }
 
 PacketType Packet::GetPacketType()
@@ -24,11 +25,24 @@ void Packet::SetPacketType(PacketType type)
 	*packetTypePtr = static_cast<PacketType>(htons(type));
 }
 
+ChatType Packet::GetChatmessageType()
+{
+	ChatType* chatTypePtr = reinterpret_cast<ChatType*>(&buffer[sizeof(PacketType)]);
+	return static_cast<ChatType>(ntohs(*chatTypePtr));
+}
+
+void Packet::SetChatmessageType(ChatType type)
+{
+	ChatType* chatTypePtr = reinterpret_cast<ChatType*>(&buffer[sizeof(PacketType)]);
+	*chatTypePtr = static_cast<ChatType>(htons(type));
+}
+
 void Packet::Clear()
 {
-	buffer.resize(sizeof(PacketType));
+	buffer.resize(sizeof(PacketType) + sizeof(ChatType));
 	SetPacketType(PacketType::Invalid);
-	extractionOffset = sizeof(PacketType);
+	SetChatmessageType(ChatType::Error);
+	extractionOffset = sizeof(PacketType) + sizeof(ChatType);
 }
 
 void Packet::Append(const void* data, uint32_t size)

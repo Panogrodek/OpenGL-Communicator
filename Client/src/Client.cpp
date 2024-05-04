@@ -43,8 +43,7 @@ bool Client::ProcessPacket(pl::Packet& packet)
 		packet >> chatmessage;
 		spdlog::info("Received Chat Message {}",chatmessage);
 
-		//TODO: fix
-		LogBox::AddMessage(chatmessage);
+		ProcessChatMessage(packet, chatmessage);
 		break;
 	}
 	case pl::PacketType::IntegerArray:
@@ -66,6 +65,31 @@ bool Client::ProcessPacket(pl::Packet& packet)
 	}
 
 	return true;
+}
+
+void Client::ProcessChatMessage(pl::Packet& packet,std::string data)
+{
+	switch (packet.GetChatmessageType())
+	{
+	case pl::ChatType::Connected:
+		logBox.GetText().SetDrawingColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+		logBox.AddMessage(data + "\n");
+		break;
+	case pl::ChatType::Disconnected:
+		logBox.GetText().SetDrawingColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		logBox.AddMessage(data + "\n");
+		break;
+	case pl::ChatType::HasSendMessage:
+		logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
+		logBox.AddMessage(data + "\n");
+		break;
+	case pl::ChatType::SetNick:
+		break;
+	case pl::ChatType::WhispersTo:
+		break;
+	default:
+		break;
+	}
 }
 
 void Client::OnConnect()
