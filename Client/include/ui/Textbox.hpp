@@ -18,6 +18,7 @@ public:
 	pl::Text& GetText();
 private:
 	void HandleShift(char c);
+	bool LookForCommands();
 	pl::AABB2D m_hitbox;
 	pl::RectangleShape* m_body;
 	pl::Text* m_text;

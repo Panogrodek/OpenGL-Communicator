@@ -14,7 +14,7 @@ namespace pl {
 	protected:
 		virtual void OnConnect(TCPConnection & newConnection);
 		virtual void OnDisconnect(TCPConnection & lostConnection, std::string reason);
-		virtual bool ProcessPacket(Packet& packet);
+		virtual bool ProcessPacket(Packet& packet, TCPConnection& connection);
 		
 		void UpdateListen();
 		void UpdateConnections();

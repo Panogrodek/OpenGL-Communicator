@@ -18,6 +18,7 @@ namespace pl {
 		Disconnected,
 		HasSendMessage,
 		WhispersTo,
+		WhoYouAre,
 	};
 
 	class Packet {

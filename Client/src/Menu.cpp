@@ -2,6 +2,8 @@
 #include "States/Menu.hpp"
 #include "Graphics/Graphics.hpp"
 
+#include "ui/ClientList.hpp"
+
 Menu::Menu()
 {
 	pl::fontManager.LoadFont("res/fonts/arial.fnt", "arial");
@@ -11,6 +13,9 @@ Menu::Menu()
 	m_textbox->GetBody().SetColor(glm::vec4{ 50, 168, 162,255 } / 255.f);
 	logBox.Init(pl::AABB2D({400.f,300.f}, {1600.f,1000.f}));
 	logBox.GetBody().SetColor(glm::vec4{ 165, 194, 192,255 } / 255.f);
+
+	clientList.Init(pl::AABB2D({ 0.f,0.f },{400.f,1000.f}));
+	clientList.GetBody().SetColor(glm::vec4(90, 109, 125, 255)/255.f);
 }
 
 Menu::~Menu()
@@ -28,4 +33,5 @@ void Menu::Render()
 	m_camera->Bind();
 	m_textbox->Render();
 	logBox.Render();
+	clientList.Render();
 }

@@ -58,7 +58,7 @@ void PLServer::OnDisconnect(TCPConnection& lostConnection, std::string reason)
     spdlog::warn("{} has lost connection: {}", lostConnection.ToString(), reason);
 }
 
-bool PLServer::ProcessPacket(Packet& packet) {
+bool PLServer::ProcessPacket(Packet& packet, TCPConnection& connection) {
     spdlog::info("Packet received with size: {}",packet.buffer.size());
     return true;
 }
@@ -119,7 +119,7 @@ void PLServer::UpdateConnections()
     for (int i = p_connections.size() - 1; i >= 0; i--) { //PLServer procesing packets that arrived from connections
         while (p_connections[i].pmIncoming.HasPendingPackets()) {
             Packet* frontPacket = p_connections[i].pmIncoming.Retrieve();
-            if (!ProcessPacket(*frontPacket)) {
+            if (!ProcessPacket(*frontPacket, p_connections[i])) {
                 CloseConnection(i, "Failed to process incoming packet");
                 break;
             }

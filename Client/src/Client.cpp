@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "Client.hpp"
 #include "ui/Logbox.hpp"
+#include "ui/ClientList.hpp"
 #include <SPDLOG/spdlog.h>
+#include <Utilities/Utilities.hpp>
 
 using namespace priv;
 
@@ -69,24 +71,49 @@ bool Client::ProcessPacket(pl::Packet& packet)
 
 void Client::ProcessChatMessage(pl::Packet& packet,std::string data)
 {
+	ClientData client;
+	std::string oldNick;
+	std::string newNick;
 	switch (packet.GetChatmessageType())
 	{
 	case pl::ChatType::Connected:
 		logBox.GetText().SetDrawingColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 		logBox.AddMessage(data + "\n");
+		client.nick = ErasePart(':',data);
+		client.nick.pop_back();
+		clientList.AddClient(client);
+		logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 		break;
 	case pl::ChatType::Disconnected:
 		logBox.GetText().SetDrawingColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 		logBox.AddMessage(data + "\n");
+		client.nick = ErasePart(':', data);
+		client.nick.pop_back();
+		clientList.RemoveClient(client);
+		logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 		break;
 	case pl::ChatType::HasSendMessage:
-		logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 		logBox.AddMessage(data + "\n");
+		logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 		break;
 	case pl::ChatType::SetNick:
+		oldNick = ErasePart(':', data);
+		oldNick.pop_back();
+		data.erase(0, 1);
+		newNick = data;
+		clientList.ChangeClientsNick(oldNick, newNick);
+		logBox.GetText().SetDrawingColor(glm::vec4(22, 7, 173,255)/255.f);
 		break;
 	case pl::ChatType::WhispersTo:
+		logBox.GetText().SetDrawingColor(glm::vec4(116, 114, 130,255)/255.f);
+		logBox.AddMessage(data + "\n");
+		logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 		break;
+	case pl::ChatType::WhoYouAre:
+		clientList.SetMe(data);
+		logBox.GetText().SetDrawingColor(glm::vec4(87, 87, 89, 255) / 255.f);
+		logBox.AddMessage("You have joined successfully! You are: " + data + "\n");
+		logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 	default:
 		break;
 	}

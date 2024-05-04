@@ -5,7 +5,6 @@ namespace priv {
 
 	class LogBox {
 	public:
-		LogBox() {};
 		void Init(pl::AABB2D aabb);
 		~LogBox();
 

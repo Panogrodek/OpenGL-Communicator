@@ -1,9 +1,12 @@
 #include "pch.h"
 #include "ui/Textbox.hpp"
+#include "ui/Logbox.hpp"
+#include "ui/ClientList.hpp"
 #include "Utilities/InputGuard.hpp"
 
 #include "SPDLOG/spdlog.h"
 #include "Client.hpp"
+#include <Utilities/Utilities.hpp>
 
 Textbox::Textbox(pl::AABB2D aabb)
 {
@@ -59,9 +62,11 @@ void Textbox::Update(){
 		}
 		else if(m_text->GetString() != "") { //we dont send empty messages
 			spdlog::info("Sending message {}", m_text->GetString());
-			pl::Packet* packet = new pl::Packet(pl::PacketType::ChatMessage, pl::ChatType::HasSendMessage);
-			*packet << m_text->GetString();
-			client.SendPacket(packet);
+			if (!LookForCommands()) {
+				pl::Packet* packet = new pl::Packet(pl::PacketType::ChatMessage, pl::ChatType::HasSendMessage);
+				*packet << m_text->GetString();
+				client.SendPacket(packet);
+			}
 			m_text->SetString("");
 		}
 	}
@@ -162,4 +167,70 @@ void Textbox::HandleShift(char c)
 		m_text->AddChar(c); //normal characters
 		break;
 	}
+}
+
+bool Textbox::LookForCommands() //only returns false, when the packet could not be send
+{
+	std::string textString = m_text->GetString();
+	if (textString.length() < 3)
+		return false;
+
+	if (textString[0] != '/' && textString[2] != ' ')
+		return false;
+
+	pl::Packet* packet = nullptr;
+	std::string whisperTo{};
+	switch (textString[1])
+	{
+	case 'h': //show help info
+		break;
+	case 'n': //change nick
+		packet = new pl::Packet(pl::PacketType::ChatMessage, pl::ChatType::SetNick);
+		textString.erase(0, 3);
+		if (textString.length() > 16) { //nick is too long
+			logBox.GetText().SetDrawingColor(glm::vec4(112, 3, 41,255)/255.f);
+			logBox.AddMessage("Your nick must be less than 16 characters!\n");
+			return true;
+		}
+		for (auto& c : textString) {
+			if (c >= 48 && c <= 57) //numbers 0-9
+				continue;
+			if (c >= 65 && c <= 90) //capital letters A-Z
+				continue;
+			if (c >= 97 && c <= 122) //lower letters a-z
+				continue;
+			logBox.GetText().SetDrawingColor(glm::vec4(112, 3, 41, 255) / 255.f);
+			logBox.AddMessage("Your nick can only include numbers and letters!\n");
+			return true;
+		}
+		*packet << textString;
+		break;
+	case 'w': //whisper
+		textString.erase(0, 3);
+		whisperTo = ErasePart(' ', textString);
+		whisperTo.pop_back();
+		if (!clientList.DoesExist(whisperTo)) {
+			logBox.GetText().SetDrawingColor(glm::vec4(112, 3, 41, 255) / 255.f);
+			logBox.AddMessage(whisperTo + " is not connected!\n");
+			return true;
+		}
+
+		if (textString.empty()) {
+			logBox.GetText().SetDrawingColor(glm::vec4(112, 3, 41, 255) / 255.f);
+			logBox.AddMessage("You tried to send empty message to " + whisperTo + "!\n");
+			return true;
+		}
+
+		packet = new pl::Packet(pl::PacketType::ChatMessage, pl::ChatType::WhispersTo);
+		*packet << whisperTo + ":" + textString;
+		logBox.GetText().SetDrawingColor(glm::vec4(116, 114, 130, 255) / 255.f);
+		logBox.AddMessage("[You/" + whisperTo + "] " + textString + "!\n");
+		break;
+	default:
+		return false;
+	}
+	if (packet == nullptr)
+		return false;
+	client.SendPacket(packet);
+	return true;
 }
