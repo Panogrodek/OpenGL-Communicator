@@ -7,8 +7,8 @@ using namespace pl;
 Texture::Texture(uint32_t width, uint32_t height)
 	: m_Width(width), m_Height(height)
 {
-	m_InternalFormat = GL_RED;
-	m_DataFormat =	GL_UNSIGNED_BYTE;
+	m_InternalFormat = GL_RGBA8;
+	m_DataFormat = GL_RGBA;
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
 	glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
@@ -50,8 +50,6 @@ Texture::Texture(const std::string& path) :
 	m_InternalFormat = internalFormat;
 	m_DataFormat = dataFormat;
 
-	//ENG_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
-
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
 	glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
 
@@ -63,12 +61,10 @@ Texture::Texture(const std::string& path) :
 	stbi_image_free(data);
 }
 
-void Texture::SetData(void* data, glm::ivec2 size, glm::ivec2 pos)
+void Texture::SetData(void* data, uint32_t size)
 {
-	if (size.x > m_Width || size.y > m_Height)
-		return;
-	glBindTexture(GL_TEXTURE_2D,m_RendererID);
-	glTextureSubImage2D(m_RendererID, 0, pos.x, pos.y, size.x, size.y, GL_RED, GL_UNSIGNED_BYTE, data);
+	uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
+	glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 }
 
 Texture::~Texture()

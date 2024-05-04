@@ -11,11 +11,15 @@
 
 #include "Graphics/BatchRenderer.hpp"
 #include "Graphics/Font.hpp"
-
+#include "Utilities/InputGuard.hpp"
 
 
 using namespace pl;
 using namespace priv;
+
+void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    inputGuard.UpdateKey(key,action);
+}
 
 void Renderer::InitGL()
 {
@@ -43,6 +47,8 @@ void Renderer::InitGL()
     int width, height;
     glfwGetFramebufferSize(m_window, &width, &height);
     glViewport(0, 0, width, height);
+
+    glfwSetKeyCallback(m_window, key_callback);
 
     //mouse input
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);

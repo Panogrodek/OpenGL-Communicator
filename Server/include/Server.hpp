@@ -10,5 +10,5 @@ public:
 private:
 	void OnConnect(pl::TCPConnection& newConnection) override;
 	void OnDisconnect(pl::TCPConnection& lostConnection, std::string reason) override;
-	bool ProcessPacket(pl::Packet* packet);
+	bool ProcessPacket(pl::Packet& packet) override;
 };

@@ -8,6 +8,7 @@ namespace priv {
 		~Client();
 
 		void Run();
+		void SendPacket(pl::Packet* packet);
 	private:
 		bool ProcessPacket(pl::Packet& packet) override;
 		void OnConnect() override;

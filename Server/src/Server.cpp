@@ -41,7 +41,25 @@ void Server::OnDisconnect(pl::TCPConnection& lostConnection, std::string reason)
 	}
 }
 
-bool Server::ProcessPacket(pl::Packet* packet)
+bool Server::ProcessPacket(pl::Packet& packet)
 {
-	return false;
+	switch (packet.GetPacketType())
+	{
+		case pl::PacketType::ChatMessage:
+		{
+			std::string chatmessage;
+			packet >> chatmessage;
+			spdlog::info("Received Chat Message {}", chatmessage);
+			
+
+			//TODO: fix
+			for (auto& connection : p_connections) {
+				pl::Packet* newPacket = new pl::Packet(pl::PacketType::ChatMessage);
+				*newPacket << chatmessage;
+				connection.pmOutgoing.Append(newPacket);
+			}
+			break;
+		}
+	}
+	return true;
 }

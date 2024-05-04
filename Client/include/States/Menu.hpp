@@ -1,6 +1,8 @@
 #pragma once
 #include "StateMachine.hpp"
 #include "Graphics/Graphics.hpp"
+#include "ui/Textbox.hpp"
+#include "ui/Logbox.hpp"
 
 class Menu : public State {
 public:
@@ -11,5 +13,6 @@ public:
 	virtual void Render() override;
 private:
 	pl::Camera* m_camera;
-	pl::Text* m_text;
+	Textbox* m_textbox;
+	LogBox* m_logbox;
 };

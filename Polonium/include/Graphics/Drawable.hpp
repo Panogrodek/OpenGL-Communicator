@@ -50,7 +50,7 @@ namespace pl {
 
 		Vertex* p_baseVertices = nullptr;
 		glm::vec2* p_transformedVertices = nullptr;
-		uint8_t p_vertexCount = 0;
+		uint16_t p_vertexCount = 0;
 
 		Shape p_type = Shape::None;
 

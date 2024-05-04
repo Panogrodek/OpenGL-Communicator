@@ -11,7 +11,7 @@ namespace pl {
 
 		uint32_t GetWidth()  const { return m_Width; }
 		uint32_t GetHeight() const { return m_Height; }
-		void SetData(void* data, glm::ivec2 size, glm::ivec2 pos = glm::ivec2(0));
+		void SetData(void* data, uint32_t size);
 
 		void Bind(uint32_t slot = 0) const;
 		bool operator==(const Texture& other) const

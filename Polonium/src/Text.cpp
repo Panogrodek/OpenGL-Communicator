@@ -19,6 +19,14 @@ Text::Text(std::string font, std::string stringText, glm::vec2 position, glm::ve
 		InitVertices();
 }
 
+Text::~Text()
+{
+	if (p_baseVertices != nullptr)
+		delete[] p_baseVertices;
+	if (p_transformedVertices != nullptr)
+		delete[] p_transformedVertices;
+}
+
 void Text::SetString(std::string stringText)
 {
 	m_stringText = stringText;
@@ -46,7 +54,8 @@ void Text::SetTextBounds(AABB2D bounds)
 {
 	m_textBounds = bounds;
 	if (bounds.GetArea() != 0.f) {
-		p_position = glm::vec2(bounds.lowerBound.x,bounds.upperBound.y);
+		glm::vec2 size = bounds.upperBound - bounds.lowerBound;
+		p_position = glm::vec2(bounds.lowerBound.x, bounds.upperBound.y);
 	}
 	InitVertices();
 }
@@ -86,22 +95,22 @@ void Text::InitVertices()
     {
 		if (c == '\n') {
 			pos.x = p_position.x;
-			pos.y += lineSkip;
+			pos.y -= lineSkip;
 			continue;
 		}
         auto& ch = fontManager.GetFont(m_font).GetCharacter(c);
 
 		float x = pos.x + ch.offset.x;
-		float y = -pos.y - ch.offset.y;
+		float y = pos.y - ch.offset.y;
 		float w = ch.pngSize.x;
 		float h = ch.pngSize.y;
 
 		if (x + w > xmax) {
 			pos.x = p_position.x;
-			pos.y += lineSkip;
+			pos.y -= lineSkip;
 			
 			x = pos.x + ch.offset.x;
-			y = -pos.y - ch.offset.y;
+			y = pos.y - ch.offset.y;
 		}
 		pos.x += ch.xAdvance;
 
@@ -148,6 +157,8 @@ void Text::UpdateVertices()
 			auto& v = p_baseVertices[i].position * p_size;
 			float rx = cos * v.x - sin * v.y;
 			float ry = sin * v.x + cos * v.y;
+			//float rx = 0.f;
+			//float ry = 0.f;
 
 			p_transformedVertices[i] = glm::vec2(rx + p_position.x, ry + p_position.y);
 		}

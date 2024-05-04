@@ -21,8 +21,10 @@ RectangleShape::RectangleShape(glm::vec2 pos, glm::vec2 size, float rotation)
 
 RectangleShape::~RectangleShape()
 {
-	delete[] p_baseVertices;
-	delete[] p_transformedVertices;
+	if(p_baseVertices != nullptr)
+		delete[] p_baseVertices;
+	if(p_transformedVertices != nullptr)
+		delete[] p_transformedVertices;
 }
 
 void RectangleShape::InitVertices()

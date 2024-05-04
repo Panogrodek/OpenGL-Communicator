@@ -1,11 +1,13 @@
 #include "pch.h"
 #include "Client.hpp"
+#include "ui/Logbox.hpp"
+#include <SPDLOG/spdlog.h>
 
 using namespace priv;
 
 Client::Client()
 {
-	//Connect(pl::IPEndpoint("::1", 6112));
+	Connect(pl::IPEndpoint("::1", 6112));
 }
 
 Client::~Client()
@@ -20,6 +22,17 @@ void Client::Run()
 	Frame();
 }
 
+void Client::SendPacket(pl::Packet* packet)
+{
+	if (!IsConnected()) {
+		spdlog::warn("Tried sending packet without connection established!");
+		delete packet;
+		return;
+	}
+
+	p_connection.pmOutgoing.Append(packet);
+}
+
 bool Client::ProcessPacket(pl::Packet& packet)
 {
 	switch (packet.GetPacketType())
@@ -28,7 +41,10 @@ bool Client::ProcessPacket(pl::Packet& packet)
 	{
 		std::string chatmessage;
 		packet >> chatmessage;
-		std::cout << "Chat Message: " << chatmessage << std::endl;
+		spdlog::info("Received Chat Message {}",chatmessage);
+
+		//TODO: fix
+		LogBox::AddMessage(chatmessage);
 		break;
 	}
 	case pl::PacketType::IntegerArray:
