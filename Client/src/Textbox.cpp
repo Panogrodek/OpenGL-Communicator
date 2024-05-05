@@ -190,6 +190,7 @@ bool Textbox::LookForCommands() //only returns false, when the packet could not 
 		if (textString.length() > 16) { //nick is too long
 			logBox.GetText().SetDrawingColor(glm::vec4(112, 3, 41,255)/255.f);
 			logBox.AddMessage("Your nick must be less than 16 characters!\n");
+			logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 			return true;
 		}
 		for (auto& c : textString) {
@@ -201,6 +202,7 @@ bool Textbox::LookForCommands() //only returns false, when the packet could not 
 				continue;
 			logBox.GetText().SetDrawingColor(glm::vec4(112, 3, 41, 255) / 255.f);
 			logBox.AddMessage("Your nick can only include numbers and letters!\n");
+			logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 			return true;
 		}
 		*packet << textString;
@@ -208,23 +210,32 @@ bool Textbox::LookForCommands() //only returns false, when the packet could not 
 	case 'w': //whisper
 		textString.erase(0, 3);
 		whisperTo = ErasePart(' ', textString);
+		if (whisperTo.empty()) {
+			logBox.GetText().SetDrawingColor(glm::vec4(112, 3, 41, 255) / 255.f);
+			logBox.AddMessage("Try: /w nick message\n");
+			logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
+			return true;
+		}
 		whisperTo.pop_back();
 		if (!clientList.DoesExist(whisperTo)) {
 			logBox.GetText().SetDrawingColor(glm::vec4(112, 3, 41, 255) / 255.f);
 			logBox.AddMessage(whisperTo + " is not connected!\n");
+			logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 			return true;
 		}
 
 		if (textString.empty()) {
 			logBox.GetText().SetDrawingColor(glm::vec4(112, 3, 41, 255) / 255.f);
 			logBox.AddMessage("You tried to send empty message to " + whisperTo + "!\n");
+			logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 			return true;
 		}
 
 		packet = new pl::Packet(pl::PacketType::ChatMessage, pl::ChatType::WhispersTo);
 		*packet << whisperTo + ":" + textString;
 		logBox.GetText().SetDrawingColor(glm::vec4(116, 114, 130, 255) / 255.f);
-		logBox.AddMessage("[You/" + whisperTo + "] " + textString + "!\n");
+		logBox.AddMessage("[You/" + whisperTo + "] " + textString + "\n");
+		logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 		break;
 	default:
 		return false;
