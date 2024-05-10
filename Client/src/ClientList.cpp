@@ -45,14 +45,7 @@ void ClientList::SetMe(std::string me)
 
 	m_text->SetString("");
 	for (auto& client : m_clients) {
-		if (&client == m_me) {
-			m_text->SetDrawingColor(glm::vec4(117, 148, 132, 255) / 255.f);
-			m_text->AddString(client.nick + "\n");
-			m_text->SetDrawingColor(glm::vec4(1.0f));
-		}
-		else {
-			m_text->AddString(client.nick + "\n");
-		}
+		m_text->AddString(client.nick + "\n");
 	}
 }
 
