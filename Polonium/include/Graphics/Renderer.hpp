@@ -27,6 +27,7 @@ namespace priv {
 		
 	private:
 		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 		GLFWwindow* m_window;
 		glm::vec2 m_mousePos{};
 		pl::Camera* m_camera = nullptr;

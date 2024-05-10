@@ -19,6 +19,9 @@ namespace priv {
 		std::vector<std::string> s_incomingMessages;
 		pl::RectangleShape* m_body;
 		pl::Text* m_text;
+
+		float m_ceiling;
+		float m_bottom;
 	};
 }
 

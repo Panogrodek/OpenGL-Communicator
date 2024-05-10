@@ -31,7 +31,7 @@ void Menu::Update()
 void Menu::Render()
 {
 	m_camera->Bind();
-	m_textbox->Render();
 	logBox.Render();
 	clientList.Render();
+	m_textbox->Render();
 }

@@ -20,6 +20,8 @@ namespace pl {
 		void SetFont(Font& font);
 		Font& GetFont();
 
+		float GetTextBottomPos();
+
 		void SetDrawingColor(glm::vec4 color);
 		glm::vec4 GetDrawingColor() const;
 
@@ -39,5 +41,7 @@ namespace pl {
 		glm::vec4 m_drawingColor{1.0f};
 
 		pl::AABB2D m_textBounds{};
+
+		float m_bottom;
 	};	
 }

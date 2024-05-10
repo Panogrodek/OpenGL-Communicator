@@ -84,8 +84,7 @@ void ClientList::AddClient(ClientData nick)
 	m_clients.emplace_back(nick);
 	m_text->SetString("");
 	for (auto& client : m_clients) {
-		std::cout << &client << " : " << m_me << "\n";
-		if (&client == m_me) {
+		if (&client == m_me) { //for some reason this doesnt work, I'm propably dumb
 			m_text->SetDrawingColor(glm::vec4(117, 148, 132, 255) / 255.f);
 			m_text->AddString(client.nick + "\n");
 			m_text->SetDrawingColor(glm::vec4(1.0f));

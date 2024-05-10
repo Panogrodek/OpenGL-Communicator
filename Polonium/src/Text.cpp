@@ -137,6 +137,11 @@ Font& Text::GetFont()
 	return Font(); //this is wrong TODO: fix
 }
 
+float Text::GetTextBottomPos()
+{
+	return m_bottom * p_size.y;
+}
+
 void Text::SetDrawingColor(glm::vec4 color)
 {
 	m_drawingColor = color;
@@ -238,6 +243,7 @@ void Text::UpdateVertexFontData(std::string newData)
 		p_baseVertices[charVertexCount + 3].texIndex = 1;
 		charVertexCount += 4;
 		m_cursorPos = pos;
+		m_bottom = m_cursorPos.y - h;
 	}
 
 	for (int i = 0; i < p_vertexCount; i++) {
@@ -328,6 +334,7 @@ void Text::InitVertices()
 		p_baseVertices[charVertexCount + 3].texIndex = 1;
 		charVertexCount += 4;
 		m_cursorPos = pos;
+		m_bottom = m_cursorPos.y + h;
     }
 
 	for (int i = 0; i < p_vertexCount; i++) {

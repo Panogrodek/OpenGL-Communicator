@@ -12,6 +12,7 @@
 #include "Graphics/BatchRenderer.hpp"
 #include "Graphics/Font.hpp"
 #include "Utilities/InputGuard.hpp"
+#include "Utilities/Mouse.hpp"
 
 
 using namespace pl;
@@ -19,6 +20,11 @@ using namespace priv;
 
 void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     inputGuard.UpdateKey(key,action);
+}
+
+void Renderer::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    mouse.m_offset = glm::vec2(xoffset, yoffset);
 }
 
 void Renderer::InitGL()
@@ -48,7 +54,8 @@ void Renderer::InitGL()
     glfwGetFramebufferSize(m_window, &width, &height);
     glViewport(0, 0, width, height);
 
-    glfwSetKeyCallback(m_window, key_callback);
+    glfwSetKeyCallback(m_window, key_callback); //this has been a grave mistake to do this
+    glfwSetScrollCallback(m_window, scroll_callback);
 
     //mouse input
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
