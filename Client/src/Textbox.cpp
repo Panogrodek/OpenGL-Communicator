@@ -172,10 +172,10 @@ void Textbox::HandleShift(char c)
 bool Textbox::LookForCommands() //only returns false, when the packet could not be send
 {
 	std::string textString = m_text->GetString();
-	if (textString.length() < 3)
+	if (textString.length() < 2)
 		return false;
 
-	if (textString[0] != '/' && textString[2] != ' ')
+	if (textString[0] != '/')
 		return false;
 
 	pl::Packet* packet = nullptr;
@@ -183,7 +183,12 @@ bool Textbox::LookForCommands() //only returns false, when the packet could not 
 	switch (textString[1])
 	{
 	case 'h': //show help info
-		break;
+		logBox.GetText().SetDrawingColor(glm::vec4(26, 92, 56, 255) / 255.f);
+		logBox.AddMessage("/h -> shows this message\n");
+		logBox.AddMessage("/n nick -> sets your nick. Nick must be less than\n16 characters\n");
+		logBox.AddMessage("/w receiver message -> creates a secret message that only receiver sees\n");
+		logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
+		return true;
 	case 'n': //change nick
 		packet = new pl::Packet(pl::PacketType::ChatMessage, pl::ChatType::SetNick);
 		textString.erase(0, 3);

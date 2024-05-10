@@ -23,8 +23,24 @@ void Server::Run()
 void Server::OnConnect(pl::TCPConnection& newConnection)
 {
 	spdlog::info("{} - new connection accepted server side" , newConnection.ToString());
+	//setting the new nick
 	m_connectedClients[newConnection.ToString()] = Client();
-	m_connectedClients[newConnection.ToString()].nick = std::string("dummy" + std::to_string(m_connectedClients.size()));
+	bool nickSet = false;
+	std::string curNick{};
+	int i = 0;
+	while (nickSet == false) {
+		nickSet = true;
+		curNick = std::string("dummy" + std::to_string(m_connectedClients.size() + i));
+
+		for (auto& [ip, client] : m_connectedClients) {
+			if (client.nick == curNick) {
+				nickSet = false;
+				break;
+			}
+		}
+		i++;
+	}
+	m_connectedClients[newConnection.ToString()].nick = curNick;
 	auto& newCon = m_connectedClients[newConnection.ToString()];
 
 	for (auto& con : p_connections) {

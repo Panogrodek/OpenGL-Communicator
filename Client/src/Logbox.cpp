@@ -25,7 +25,6 @@ LogBox::~LogBox()
 
 void LogBox::Update()
 {
-	//std::cout << m_text->GetTextBottomPos() << "\n";
 	float offset = pl::mouse.GetOffset().y;
 	if (offset != 0.f) {
 		auto& bounds = m_text->GetAABB2D();
