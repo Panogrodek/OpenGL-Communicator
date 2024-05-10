@@ -15,6 +15,9 @@ void LogBox::Init(pl::AABB2D aabb)
 
 	m_ceiling = aabb.upperBound.y;
 	m_bottom = size.y;
+	logBox.GetText().SetDrawingColor(glm::vec4(26, 92, 56, 255) / 255.f);
+	AddMessage("Welcome! Use /h to show list of available commands!\n");
+	logBox.GetText().SetDrawingColor(glm::vec4(1.0f));
 }
 
 LogBox::~LogBox()

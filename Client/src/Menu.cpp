@@ -20,6 +20,8 @@ Menu::Menu()
 
 Menu::~Menu()
 {
+	delete m_camera;
+	delete m_textbox;
 }
 
 void Menu::Update()

@@ -12,11 +12,6 @@ Client::Client()
 	Connect(pl::IPEndpoint("::1", 6112));
 }
 
-Client::~Client()
-{
-
-}
-
 void Client::Run()
 {
 	if (!IsConnected())

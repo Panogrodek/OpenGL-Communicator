@@ -61,8 +61,8 @@ void Textbox::Update(){
 			m_text->AddChar('\n');
 		}
 		else if(m_text->GetString() != "") { //we dont send empty messages
-			spdlog::info("Sending message {}", m_text->GetString());
 			if (!LookForCommands()) {
+				spdlog::info("Sending message {}", m_text->GetString());
 				pl::Packet* packet = new pl::Packet(pl::PacketType::ChatMessage, pl::ChatType::HasSendMessage);
 				*packet << m_text->GetString();
 				client.SendPacket(packet);
