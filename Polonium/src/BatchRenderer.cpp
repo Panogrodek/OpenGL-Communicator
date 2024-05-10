@@ -62,7 +62,6 @@ void BatchRenderer::Init(uint32_t maxQuads)
 	for (uint32_t i = 0; i < 32; i++)
 		samplers[i] = i;
 
-	/*m_Textures[0] = new Texture("res/textures/tymon.png");*/
 	m_Textures[0] = new Texture(1, 1);
 	uint32_t whiteTextureData = 0xffffffff;
 	m_Textures[0]->SetData(&whiteTextureData,sizeof(whiteTextureData));
